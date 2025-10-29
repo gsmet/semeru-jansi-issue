@@ -59,6 +59,54 @@ The issue is not transient, I can reproduce it always.
 Note that the test first reads from the jar with the approach used in `JansiLoader` (`JarURLConnection`) but also tries the same comparison with reading the content from the jar file using a `ZipFile`.
 The problem seems related to reading Zip content.
 
+The problem seems related to the way the Zip `InputStream` is read.
+Jansi uses the following construct to compare the content of both ``InputStream``s:
+
+```java
+    private static int readNBytes(InputStream in, byte[] b) throws IOException {
+        int n = 0;
+
+        int count;
+        for(int len = b.length; n < len; n += count) {
+            count = in.read(b, n, len - n);
+            if (count <= 0) {
+                break;
+            }
+        }
+
+        return n;
+    }
+
+    private static String contentsEquals(InputStream in1, InputStream in2) throws IOException {
+        byte[] buffer1 = new byte[8192];
+        byte[] buffer2 = new byte[8192];
+
+        do {
+            int numRead1 = readNBytes(in1, buffer1);
+            int numRead2 = readNBytes(in2, buffer2);
+            if (numRead1 <= 0) {
+                if (numRead2 > 0) {
+                    return "EOF on first stream but not second";
+                }
+
+                return null;
+            }
+
+            if (numRead2 <= 0) {
+                return "EOF on second stream but not first";
+            }
+
+            if (numRead2 != numRead1) {
+                return "Read size different (" + numRead1 + " vs " + numRead2 + ")";
+            }
+        } while(Arrays.equals(buffer1, buffer2));
+
+        return "Content differs";
+    }
+```
+
+Switching to using `InputStream#readAllBytes()` solves the problem.
+
 ### Output on Temurin
 
 ```
