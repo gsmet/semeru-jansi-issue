@@ -52,7 +52,25 @@ JCL      - 56cc1351c53 based on jdk-25+36)
 The reproducer is in `JansiLoaderTest`.
 It is a simplified version of what is done in `JansiLoader` from Jansi.
 
+Make sure you use Semeru as your runtime:
+
+```
+$ sdk current java
+... // just to make sure you know which one you use at the moment so you can get back to it
+$ sdk install java 21.0.8-sem
+$ java -version
+openjdk version "21.0.8" 2025-07-15 LTS
+IBM Semeru Runtime Open Edition 21.0.8.0 (build 21.0.8+9-LTS)
+Eclipse OpenJ9 VM 21.0.8.0 (build openj9-0.53.0, JRE 21 Linux amd64-64-Bit Compressed References 20250715_547 (JIT enabled, AOT enabled)
+OpenJ9   - 017819f167
+OMR      - 266a8c6f5
+JCL      - d5f1e70d135 based on jdk-21.0.8+9)
+```
+
 Running `mvn clean test` is enough to reproduce the problem on my laptop.
+
+> [!NOTE]
+> Make sure you go back to your regular JDK after this experiment.
 
 The issue is not transient, I can reproduce it always.
 
