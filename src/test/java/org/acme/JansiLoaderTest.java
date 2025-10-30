@@ -1,7 +1,6 @@
 package org.acme;
 
 import org.fusesource.jansi.internal.JansiLoader;
-import org.fusesource.jansi.internal.OSInfo;
 import java.util.logging.Logger;
 import org.junit.jupiter.api.Test;
 
@@ -31,7 +30,7 @@ public class JansiLoaderTest {
     public void testJansiSoContent() throws IOException {
         String jansiNativeLibraryName = "libjansi.so";
         String packagePath = JansiLoader.class.getPackage().getName().replace('.', '/');
-        String jansiNativeLibraryPath = String.format("/%s/native/%s", packagePath, OSInfo.getNativeLibFolderPathForCurrentOS());
+        String jansiNativeLibraryPath = String.format("/%s/native/%s", packagePath, "Linux/x86_64");
         boolean hasNativeLib = hasResource(jansiNativeLibraryPath + "/" + jansiNativeLibraryName);
         if (!hasNativeLib) {
             throw new IllegalStateException("Couldn't find native library: " + jansiNativeLibraryPath + "/" + jansiNativeLibraryName);
